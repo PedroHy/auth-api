@@ -4,6 +4,12 @@ const jwt = require('jsonwebtoken');
 
 const authConfig = require('../../config/auth.json');
 
+function generateToken(params = {}){
+    return jwt.sign( params, authConfig.secret, {
+        expiresIn: 86400,
+    } )
+}
+
 const register = async(req, res) => {
 
     const { email } = req.body;
@@ -14,7 +20,7 @@ const register = async(req, res) => {
         }
         const user = await User.create(req.body);
         user.password = undefined;
-        return res.send('Sucessfully: User Registered')
+        return res.send({user, token: generateToken({id: user._id})})
     }catch(err){
         res.status(400).send(`Error: Registration Failed`);
     }
@@ -35,11 +41,7 @@ const authenticate = async(req, res)=>{
 
         user.password = undefined;
 
-        const token = jwt.sign( {id: user._id}, authConfig.secret, {
-            expiresIn: 86400,
-        } )
-
-        res.send({user, token});
+        res.send({user, token: generateToken({id: user._id})});
     }catch{
         res.status(400).send('Error: Can`t authenticate')
     }
