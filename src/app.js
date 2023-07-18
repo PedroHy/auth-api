@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 //routes
-const router = require('./routes/auth');
+const router = require('./routes/authRoute');
 
 //DB connection
 mongoose.connect(`mongodb://127.0.0.1/${process.env.DB_NAME}`).then(()=>{
