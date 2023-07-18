@@ -1,6 +1,8 @@
+//modules
 const express = require('express');
 const router = express.Router();
 
+//controllers
 const authControllers = require('./controllers/authControllers');
 
 //GET
