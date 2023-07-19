@@ -91,4 +91,34 @@ const forgotPassword = async(req, res)=>{
         res.status(400).send({error: 'Error on forgot password try again'})
     }
 }
-module.exports = { register, authenticate, forgotPassword };
+
+const resetPassword = async(req, res)=>{
+    const { email, token, password } = req.body;
+
+    try{
+        const user = await User.findOne({email}).select('+passwordResetToken passwordResetExpires');
+
+        if(!user){
+            return res.status(400).send({error: 'User not found'})
+        }
+
+        if(user.passwordResetToken !== token){
+            return res.status(400).send({error: 'Wrong token'})
+        }
+
+        const now = new Date()
+
+        if(now.getHours() > user.passwordResetExpires){
+            return res.status(400).send({error: 'Token expired'})
+        }
+
+        user.password = password;
+
+        await user.save();
+        res.send()
+    }catch{
+        return res.status(400).send({error: 'Can´t reset password, try again'})
+    }
+}
+
+module.exports = { register, authenticate, forgotPassword, resetPassword };
