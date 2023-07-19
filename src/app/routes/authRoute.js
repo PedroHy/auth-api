@@ -10,6 +10,7 @@ const authControllers = require('./controllers/authControllers');
 //POST
 router.post('/register', authControllers.register);
 router.post('/login', authControllers.authenticate);
+router.post('/forgot-pass', authControllers.forgotPassword);
 //PUT
 
 //DELETE

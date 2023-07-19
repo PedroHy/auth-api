@@ -2,6 +2,7 @@
 const User = require('../../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 //config file
 const authConfig = require('../../../config/auth.json');
@@ -52,4 +53,28 @@ const authenticate = async (req, res) => {
 
 }
 
-module.exports = { register, authenticate };
+const forgotPassword = async(req, res)=>{
+    const {email} = req.body;
+    try{
+        const user = await User.findOne({email})
+        if(!user){
+            return res.status(400).send({error: 'User not found'})
+        }
+
+        const token = crypto.randomBytes(20).toString('hex');
+        const now = new Date()
+        now.setHours(now.getHours() + 1);
+
+        await User.findByIdAndUpdate(user.id, {
+            '$set':{
+                passwordResetToken: token,
+                passwordResetExpires: now
+            }
+        })
+
+        console.log(token, now)
+    }catch{
+        res.status(400).send({error: 'Error on forgot password try again'})
+    }
+}
+module.exports = { register, authenticate, forgotPassword };
