@@ -3,6 +3,7 @@ const User = require('../../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const mailer = require('../../../modules/mailer');
 
 //config file
 const authConfig = require('../../../config/auth.json');
@@ -72,7 +73,20 @@ const forgotPassword = async(req, res)=>{
             }
         })
 
-        console.log(token, now)
+        mailer.sendMail({
+            to: email,
+            from: 'pedrohrda093@gmail.com',
+            template: 'auth/forgot_password',
+            context: { token }
+        }, (err)=>{
+            if(err){
+                console.log(err)
+                res.status(400).send({error: 'Error on send forgot email'})
+            }
+
+            return res.send()
+        })
+
     }catch{
         res.status(400).send({error: 'Error on forgot password try again'})
     }
